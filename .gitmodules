@@ -1,0 +1,4 @@
+[submodule "sophia"]
+	path = sophia
+	url = git@github.com:pmwkaa/sophia.git
+	branch = v2.2
