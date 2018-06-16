@@ -38,8 +38,6 @@ extension=sophia.so
 
 ### sp_open
 
-#### Description
-
 resource $dblink **sp\_open** ( \$dbpath, \$dbname )
 
 ```php
@@ -48,8 +46,6 @@ var_dump($link);
 ```
 
 ### sp_set
-
-#### Description
 
 bool  **sp\_set** ( \$key, \$value )
 
@@ -61,8 +57,6 @@ return true represent success or failure
 
 ### sp_get
 
-#### Description
-
 string $value **sp\_get** ( \$key )
 
 ```php
@@ -72,8 +66,6 @@ var_dump(sp_get('name'));
 value for specific key, if key not exists will got null
 
 ### sp_delete
-
-#### Description
 
 bool **sp\_delete** ( \$key )
 
@@ -85,8 +77,6 @@ return true if delete successfully or false on error
 
 ### sp_begin
 
-#### Description
-
 resource **sp\_begin** (  )
 
 ```php
@@ -96,8 +86,6 @@ var_dump($transaction = sp_begin());
 start a transaction
 
 ### sp_commit
-
-#### Description
 
 resource **sp\_commit** ( resource $transaction )
 
