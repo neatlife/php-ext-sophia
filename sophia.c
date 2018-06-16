@@ -37,6 +37,8 @@ static int le_sophia;
 
 // latest env
 void* latest_env;
+void* latest_db;
+void* latest_transaction;
 
 /* {{{ PHP_INI
  */
@@ -75,7 +77,7 @@ PHP_FUNCTION(sp_open)
 	// open db for CURD operation
 	char full_db_name[256];
 	php_sprintf(full_db_name, "db.%s", database);
-	void *db = sp_getobject(env, full_db_name);
+	void *db = latest_db = sp_getobject(env, full_db_name);
 	db_resource = zend_register_resource(db, le_sophia_db);
 
 	void *o = sp_document(db);
@@ -93,15 +95,20 @@ PHP_FUNCTION(sp_set)
 		return;
 	}
 
-	if (!db_resource_zval) {
+	void *db = NULL;
+	if (db_resource_zval) {
+		db = Z_RES_VAL_P(db_resource_zval);
+	} else if (latest_db) {
+		db = latest_db;
+	} else {
 		zend_throw_exception(NULL, "no db connection");
 		return;
 	}
 
-	void *o = sp_document(Z_RES_VAL_P(db_resource_zval));
+	void *o = sp_document(db);
 	sp_setstring(o, "key", key, key_len);
 	sp_setstring(o, "value", value, value_len);
-	int failure = sp_set(Z_RES_VAL_P(db_resource_zval), o);
+	int failure = sp_set(db, o);
 
 	if (failure) { // -1 failure
 		RETURN_FALSE;
@@ -120,12 +127,16 @@ PHP_FUNCTION(sp_get)
 		return;
 	}
 
-	if (!db_resource_zval) {
+	void *db = NULL;
+	if (db_resource_zval) {
+		db = Z_RES_VAL_P(db_resource_zval);
+	} else if (latest_db) {
+		db = latest_db;
+	} else {
 		zend_throw_exception(NULL, "no db connection");
 		return;
 	}
 
-	void *db = Z_RES_VAL_P(db_resource_zval);
 	void *o = sp_document(db);
 	sp_setstring(o, "key", key, key_len);
 	void *result = sp_get(db, o);
@@ -150,12 +161,16 @@ PHP_FUNCTION(sp_delete)
 		return;
 	}
 
-	if (!db_resource_zval) {
+	void *db = NULL;
+	if (db_resource_zval) {
+		db = Z_RES_VAL_P(db_resource_zval);
+	} else if (latest_db) {
+		db = latest_db;
+	} else {
 		zend_throw_exception(NULL, "no db connection");
 		return;
 	}
 
-	void *db = Z_RES_VAL_P(db_resource_zval);
 	void *o = sp_document(db);
 	sp_setstring(o, "key", key, key_len);
 	int failure = sp_delete(db, o);
@@ -173,7 +188,7 @@ PHP_FUNCTION(sp_begin)
 	zend_resource *transaction_resource;
 
 	void *env = latest_env;
-	void *transaction = sp_begin(env);
+	void *transaction = latest_transaction = sp_begin(env);
 
 	if (!transaction) { // NULL error!
 		RETURN_FALSE;
@@ -191,12 +206,16 @@ PHP_FUNCTION(sp_commit)
 		return;
 	}
 
-	if (!transaction_resource_zval) {
+	void *transaction = NULL;
+	if (transaction_resource_zval) {
+		transaction = Z_RES_VAL_P(transaction_resource_zval);
+	} else if (latest_transaction) {
+		transaction = latest_transaction;
+	} else {
 		zend_throw_exception(NULL, "no transaction context");
 		return;
 	}
 
-	void *transaction = Z_RES_VAL_P(transaction_resource_zval);
 	int status = sp_commit(transaction);
 
 	RETURN_LONG(status);
