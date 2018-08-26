@@ -1,0 +1,30 @@
+sudo: required
+language: php
+php:
+  - 7.0
+  - 7.1
+  - 7.2
+  - nightly
+env: CC=gcc
+matrix:
+  allow_failures:
+    - php: nightly
+  include:
+    - php: 7.0
+      env: CC=clang
+    - php: 7.1
+      env: CC=clang
+    - php: 7.2
+      env: CC=clang
+addons:
+  apt:
+    packages:
+      - clang
+before_install:
+  - phpize
+  - ./configure
+install: make install
+before_script:
+  - echo 'extension = sophia.so' >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+script:
+  - php sophia.php

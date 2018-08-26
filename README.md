@@ -1,6 +1,12 @@
 # sophia Extension for PHP
 
+[![Build Status](https://travis-ci.org/neatlife/php-h3.svg?branch=master)](https://travis-ci.org/neatlife/php-ext-sophia)
+
 Modern transactional key-value/row storage library binding write by c extension for php.
+
+For more information on sophia and for the full API documentation, please see the [sophia Documentation](http://sophia.systems/v2.2/index.html).
+
+-   Post **bug reports or feature requests** to the [Github Issues page](https://github.com/neatlife/php-ext-sophia/issues)
 
 ## Build from sources
 
